@@ -7,9 +7,6 @@ var cloudParticles = [], flash, rain, rainGeo, rainCount = 15000;
 // Controls
 var cameraControls, effectControls;
 
-// Functions
-updateAspectRatio();
-
 function init()
 {
 	// Scene
