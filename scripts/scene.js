@@ -1,30 +1,39 @@
-var scene, camera, renderer, cloudParticles = [], flash, rain, rainGeo, rainCount = 15000;
+// Standard variables
+var scene, camera, renderer;
+
+// Scene objects variables
+var cloudParticles = [], flash, rain, rainGeo, rainCount = 15000;
 
 function init()
 {
+	// Scene
 	scene = new THREE.Scene();
+
+	// Camera
 	camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
 	camera.position.z = 1;
 	camera.rotation.x = 1.16;
 	camera.rotation.y = -0.12;
 	camera.rotation.z = 0.27;
 
+	renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.shadowMap.enabled = true;
+
+	scene.fog = new THREE.FogExp2(0x11111f, 0.002);
+	renderer.setClearColor(scene.fog.color);
+	document.body.appendChild(renderer.domElement);
+
 	ambient = new THREE.AmbientLight(0x555555);
 	scene.add(ambient);
 
 	directionalLight = new THREE.DirectionalLight(0xffeedd);
-	directionalLight.position.set(0,0,1);
+	directionalLight.position.set(0, 0, 1);
 	scene.add(directionalLight);
 
 	flash = new THREE.PointLight(0x062d89, 30, 500 ,1.7);
 	flash.position.set(200, 300, 100);
 	scene.add(flash);
-
-	renderer = new THREE.WebGLRenderer();
-	scene.fog = new THREE.FogExp2(0x11111f, 0.002);
-	renderer.setClearColor(scene.fog.color);
-	renderer.setSize(window.innerWidth, window.innerHeight);
-	document.body.appendChild(renderer.domElement);
 
 	rainGeo = new THREE.Geometry();
 	for(var i = 0; i < rainCount; i++)
@@ -77,29 +86,40 @@ function init()
 
 function animate()
 {
-  	cloudParticles.forEach(p => {
-		p.rotation.z -= 0.002;
-  });
-  rainGeo.vertices.forEach(p => {
-	p.velocity -= 0.1 + Math.random() * 0.1;
-	p.y += p.velocity;
-	if (p.y < -200) {
-	  p.y = 200;
-	  p.velocity = 0;
+  	cloudParticles.forEach(p =>
+		{
+			p.rotation.z -= 0.002;
+		});
+	rainGeo.vertices.forEach(p =>
+		{
+			p.velocity -= 0.1 + Math.random() * 0.1;
+			p.y += p.velocity;
+			if(p.y < -200)
+			{
+				p.y = 200;
+				p.velocity = 0;
+			}
+		});
+	rainGeo.verticesNeedUpdate = true;
+	rain.rotation.y += 0.002;
+	if(Math.random() > 0.93 || flash.power > 100)
+	{
+		if(flash.power < 100) {
+			flash.position.set(Math.random() * 400, 300 + Math.random() * 200, 100);
+		}
+		flash.power = 50 + Math.random() * 500;
 	}
-  });
-  rainGeo.verticesNeedUpdate = true;
-  rain.rotation.y +=0.002;
-  if(Math.random() > 0.93 || flash.power > 100) {
-	if(flash.power < 100)
-	  flash.position.set(
-		Math.random()*400,
-		300 + Math.random() *200,
-		100
-	  );
-	flash.power = 50 + Math.random() * 500;
-  }
-  renderer.render(scene, camera);
-  requestAnimationFrame(animate);
+  	renderer.render(scene, camera);
+	requestAnimationFrame(animate);
 }
+
+function updateAspectRatio()
+{
+	var aspectRatio = window.innerWidth / window.innerHeight;
+
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	camera.aspect = aspectRatio;
+	camera.updateProjectionMatrix();
+}
+
 init();
