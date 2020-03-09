@@ -16,6 +16,13 @@ function init()
 	scene = new THREE.Scene();
 	scene.fog = new THREE.FogExp2(0x11111f, 0.002);
 
+	// Renderer
+	renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.shadowMap.enabled = true;
+	renderer.setClearColor(scene.fog.color);
+	document.body.appendChild(renderer.domElement);
+
 	// Camera
 	camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
 	camera.position.z = 1;
@@ -27,13 +34,6 @@ function init()
 	cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
 	cameraControls.target.set(0, 0, 0);
 	cameraControls.noZoom = false;
-
-	// Renderer
-	renderer = new THREE.WebGLRenderer();
-	renderer.setSize(window.innerWidth, window.innerHeight);
-	renderer.shadowMap.enabled = true;
-	renderer.setClearColor(scene.fog.color);
-	document.body.appendChild(renderer.domElement);
 
 	// Lights
 	var ambient = new THREE.AmbientLight(0x555555);
