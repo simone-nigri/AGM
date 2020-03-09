@@ -7,6 +7,9 @@ var cloudParticles = [], flash, rain, rainGeo, rainCount = 15000;
 // Controls
 var cameraControls, effectControls;
 
+// Functions
+init();
+
 function init()
 {
 	// Scene
@@ -133,5 +136,3 @@ function updateAspectRatio()
 	camera.aspect = aspectRatio;
 	camera.updateProjectionMatrix();
 }
-
-init();
