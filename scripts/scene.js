@@ -4,10 +4,17 @@ var scene, camera, renderer;
 // Scene objects variables
 var cloudParticles = [], flash, rain, rainGeo, rainCount = 15000;
 
+// Controls
+var cameraControls, effectControls;
+
+// Functions
+updateAspectRatio();
+
 function init()
 {
 	// Scene
 	scene = new THREE.Scene();
+	scene.fog = new THREE.FogExp2(0x11111f, 0.002);
 
 	// Camera
 	camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
@@ -16,24 +23,32 @@ function init()
 	camera.rotation.y = -0.12;
 	camera.rotation.z = 0.27;
 
+	// Camera controls
+	cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
+	cameraControls.target.set(0, 0, 0);
+	cameraControls.noZoom = false;
+
+	// Renderer
 	renderer = new THREE.WebGLRenderer();
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.shadowMap.enabled = true;
-
-	scene.fog = new THREE.FogExp2(0x11111f, 0.002);
 	renderer.setClearColor(scene.fog.color);
 	document.body.appendChild(renderer.domElement);
 
-	ambient = new THREE.AmbientLight(0x555555);
+	// Lights
+	var ambient = new THREE.AmbientLight(0x555555);
 	scene.add(ambient);
 
-	directionalLight = new THREE.DirectionalLight(0xffeedd);
+	var directionalLight = new THREE.DirectionalLight(0xffeedd);
 	directionalLight.position.set(0, 0, 1);
 	scene.add(directionalLight);
 
-	flash = new THREE.PointLight(0x062d89, 30, 500 ,1.7);
+	flash = new THREE.PointLight(0x062d89, 30, 500, 1.7);
 	flash.position.set(200, 300, 100);
 	scene.add(flash);
+
+	// Callback to resize
+	window.addEventListener('resize', updateAspectRatio);
 
 	rainGeo = new THREE.Geometry();
 	for(var i = 0; i < rainCount; i++)
